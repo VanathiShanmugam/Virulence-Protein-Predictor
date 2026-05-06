@@ -1,1 +1,23 @@
+# Python cache
+__pycache__/
+*.pyc
 
+# Models
+*.pkl
+models/
+
+# Data
+data/raw/
+data/processed/
+
+# Results (ignore everything except figures)
+results/*
+!results/figures/
+!results/figures/*.png
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
