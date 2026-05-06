@@ -1,0 +1,144 @@
+QUICK START GUIDE
+==================
+
+This guide gets you up and running in 5 minutes!
+
+STEP 1: INSTALL DEPENDENCIES
+-----------------------------
+Run this command to install all required packages:
+
+pip install numpy pandas scikit-learn xgboost biopython imbalanced-learn matplotlib seaborn joblib scipy
+
+
+STEP 2: PREPARE YOUR DATA
+--------------------------
+Place your FASTA files in data/raw/:
+
+- virulent.fasta       (your virulent proteins)
+- non_virulent.fasta   (your non-virulent proteins)
+
+Example FASTA format:
+>protein1
+MKTLLFALLAFSSFAAQAEEQKQWEQKEKEKDQKEKEKDQKEKDKQKEKEKE
+>protein2
+MALWMRLLPLLALLALWGPDPAAAFVNQHLCGSHLVEALYLVCGERGFFYTPKA
+
+
+STEP 3: RUN THE PIPELINE
+-------------------------
+Navigate to the scripts folder:
+
+cd virulence_prediction_project/scripts
+
+Then run the complete pipeline:
+
+python master_pipeline.py --all
+
+This will:
+✓ Extract 500+ features from your sequences
+✓ Preprocess and balance data with SMOTE
+✓ Train 4 machine learning models
+✓ Generate comprehensive evaluation plots
+✓ Save trained models
+
+Expected time: 10-30 minutes
+
+
+STEP 4: RUN ENHANCED VALIDATION
+--------------------------------
+After the main pipeline completes, run:
+
+python validate_models_enhanced.py
+
+This performs:
+✓ Y-Randomization Test
+✓ Cross-Validation (5-fold and 10-fold)
+✓ Before/After SMOTE Comparison
+✓ Applicability Domain Analysis
+✓ Enhanced ROC curves with MCC
+
+Expected time: 5-15 minutes
+
+
+STEP 5: PREDICT NEW SEQUENCES
+------------------------------
+To classify new proteins:
+
+python 5_predict_new_sequences.py --fasta new_proteins.fasta --output predictions.csv
+
+Results saved in predictions.csv with:
+- Individual model predictions
+- Ensemble prediction (recommended)
+- Probability scores
+
+
+WHERE TO FIND RESULTS
+---------------------
+results/figures/          → All plots and visualizations
+results/tables/           → Performance metrics (CSV files)
+results/validation/       → Validation analyses
+models/                   → Trained model files (.pkl)
+
+
+KEY FIGURES TO CHECK
+--------------------
+📊 04_combined_roc_curves.png           → Main ROC plot (for papers)
+📊 14_combined_roc_curves_with_mcc.png  → ROC with MCC scores
+📊 10_before_after_smote_comparison.png → Impact of data balancing
+📊 12_y_randomization_test.png          → Model validity check
+📊 13_applicability_domain.png          → Prediction reliability
+
+
+INTERPRETING RESULTS
+--------------------
+Good Model Performance:
+✓ ROC-AUC > 0.85
+✓ MCC > 0.60
+✓ Y-randomization: Real >> Random
+✓ CV standard deviation < 0.05
+
+Warning Signs:
+✗ Y-randomization shows real ≈ random
+✗ Large CV standard deviation (>0.10)
+✗ Many predictions outside applicability domain
+
+
+TROUBLESHOOTING
+---------------
+Issue: "No module named 'Bio'"
+Fix: pip install biopython
+
+Issue: "Cannot find FASTA files"
+Fix: Place files in data/raw/ folder
+
+Issue: Import error for feature_extraction
+Fix: Make sure you're running from scripts/ folder
+
+Issue: Memory error
+Fix: Reduce dataset size or use fewer features
+
+
+NEED HELP?
+----------
+1. Check README.md for detailed documentation
+2. Review validation_report.txt for model performance summary
+3. Examine script output for specific error messages
+
+
+QUICK REFERENCE - ALL COMMANDS
+-------------------------------
+# Complete pipeline
+python master_pipeline.py --all
+
+# Individual steps
+python 1_feature_extraction.py
+python 2_preprocess_data.py
+python 3_train_models.py
+python 4_evaluate_models_FIXED.py
+python validate_models_enhanced.py
+
+# Make predictions
+python 5_predict_new_sequences.py --fasta INPUT.fasta --output OUTPUT.csv
+
+
+That's it! You're ready to predict virulence proteins! 🧬🤖

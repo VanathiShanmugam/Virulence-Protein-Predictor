@@ -1,0 +1,299 @@
+TROUBLESHOOTING GUIDE
+=====================
+
+Common Issues and Solutions for the Virulence Prediction Pipeline
+
+
+1. INSTALLATION ISSUES
+----------------------
+
+Problem: "No module named 'Bio'"
+Solution:
+  pip install biopython
+
+Problem: "No module named 'imblearn'"
+Solution:
+  pip install imbalanced-learn
+
+Problem: "No module named 'xgboost'"
+Solution:
+  pip install xgboost
+
+Problem: All packages won't install
+Solution:
+  # Use the requirements file
+  pip install -r requirements.txt
+  
+  # Or install with specific versions
+  pip install numpy==1.24.3 pandas==2.0.3 scikit-learn==1.3.0
+
+
+2. DATA FILE ISSUES
+-------------------
+
+Problem: "FileNotFoundError: virulent.fasta"
+Solution:
+  - Ensure file is in data/raw/ directory
+  - Check filename exactly: "virulent.fasta" (case-sensitive)
+  - Verify you're running from scripts/ directory
+
+Problem: "Empty sequence for protein_X"
+Solution:
+  - Check FASTA format (sequences must start with '>')
+  - Remove empty lines between sequences
+  - Ensure sequences contain valid amino acids only
+
+Problem: "Invalid amino acid in sequence"
+Solution:
+  - Remove sequences with: X, B, Z, U, O, J
+  - Keep only: ACDEFGHIKLMNPQRSTVWY
+  - Use text editor to clean sequences
+
+Problem: "Class imbalance too severe"
+Solution:
+  - Ensure at least 50 sequences per class
+  - SMOTE will help, but extreme imbalance (1:100) may still cause issues
+  - Consider collecting more data for minority class
+
+
+3. RUNTIME ERRORS
+-----------------
+
+Problem: "MemoryError" during training
+Solution:
+  Option 1: Reduce data size
+    - Use subset of sequences for initial testing
+  
+  Option 2: Reduce model complexity
+    # In 3_train_models.py, change:
+    n_estimators=200  →  n_estimators=100
+    max_depth=20      →  max_depth=10
+  
+  Option 3: Use less memory-intensive features
+    - Remove DPC features (400 features, memory-heavy)
+
+Problem: Training takes too long (>2 hours)
+Solution:
+  - Reduce n_estimators in Random Forest and XGBoost
+  - Use fewer CV folds (5 instead of 10)
+  - Skip SVM for large datasets (use RF, XGBoost, LogReg only)
+  - Reduce Y-randomization iterations (50 → 20)
+
+Problem: "ImportError: feature_extraction_1"
+Solution:
+  # In 5_predict_new_sequences.py, change line:
+  from feature_extraction_1 import ProteinFeatureExtractor
+  # To:
+  from 1_feature_extraction import ProteinFeatureExtractor
+
+
+4. PERFORMANCE ISSUES
+---------------------
+
+Problem: ROC-AUC < 0.6 (Poor performance)
+Possible Causes:
+  1. Data quality issues
+     - Check sequences are correctly labeled
+     - Verify no label swapping
+  
+  2. Insufficient data
+     - Need minimum 100-200 sequences per class
+     - Collect more data if possible
+  
+  3. Features not informative
+     - Try different feature sets
+     - Check feature importance plots
+  
+  4. Class imbalance
+     - Verify SMOTE is applied
+     - Check before/after SMOTE comparison
+
+Problem: Y-randomization shows real ≈ random
+This is SERIOUS - means model is not learning real patterns!
+Solutions:
+  1. Check data labels are correct
+  2. Increase dataset size
+  3. Remove duplicate sequences
+  4. Check for data leakage
+  5. Try different features
+
+Problem: High CV standard deviation (>0.10)
+Indicates overfitting or unstable model
+Solutions:
+  1. Reduce model complexity (max_depth, n_estimators)
+  2. Increase regularization (C parameter for SVM/LogReg)
+  3. Add more training data
+  4. Feature selection (remove correlated features)
+
+Problem: Low MCC despite high accuracy
+Indicates imbalanced class predictions
+Solutions:
+  1. Adjust classification threshold (default 0.5)
+  2. Tune class_weight parameter
+  3. Check SMOTE application
+  4. Use F1-score or MCC for model selection instead of accuracy
+
+
+5. PREDICTION ISSUES
+--------------------
+
+Problem: "KeyError" when loading models
+Solution:
+  - Ensure all 4 training steps completed successfully
+  - Check models/ folder contains: random_forest.pkl, xgboost.pkl, etc.
+  - Re-run training if models are missing
+
+Problem: "All predictions are same class"
+Solution:
+  1. Check new sequences are similar to training data
+  2. Look at applicability domain analysis
+  3. Verify sequences have valid amino acids
+  4. Check probability scores (not just binary predictions)
+
+Problem: "Ensemble prediction unreliable"
+Solution:
+  - Check individual model predictions
+  - If models disagree, sequence may be borderline
+  - Use applicability domain to assess confidence
+  - Consider sequences outside domain as "uncertain"
+
+
+6. VISUALIZATION ISSUES
+-----------------------
+
+Problem: "No figures generated"
+Solution:
+  - Check results/figures/ directory exists
+  - Ensure matplotlib is installed: pip install matplotlib
+  - Run scripts from correct directory (scripts/)
+
+Problem: Figures are blank or corrupted
+Solution:
+  - Update matplotlib: pip install --upgrade matplotlib
+  - Check backend: may need to set: matplotlib.use('Agg')
+  - Verify enough data to plot (need >10 samples)
+
+Problem: "DPI warning" messages
+Solution:
+  - This is just a warning, can be ignored
+  - Or adjust DPI in script: plt.rcParams['figure.dpi'] = 150
+
+
+7. VALIDATION ISSUES
+--------------------
+
+Problem: validate_models_enhanced.py fails
+Solution:
+  - Ensure basic pipeline completed first (steps 1-4)
+  - Check protein_features.csv exists in data/processed/
+  - Verify trained models exist in models/
+
+Problem: "Cannot find original training data"
+Solution:
+  - Re-run step 2 (preprocessing) to regenerate splits
+  - Ensure protein_features.csv is in data/processed/
+
+Problem: Applicability domain shows >30% outside
+Solution:
+  - This may be normal if test set is different from training
+  - Check if new predictions are within domain
+  - Consider separate validation for outside-domain predictions
+
+
+8. PATH AND DIRECTORY ISSUES
+----------------------------
+
+Problem: Scripts can't find data files
+Solution:
+  Always run from scripts/ directory:
+  
+  cd virulence_prediction_project/scripts
+  python 1_feature_extraction.py
+  
+  NOT from project root!
+
+Problem: "Permission denied" errors
+Solution:
+  # Linux/Mac: Add write permissions
+  chmod -R 755 virulence_prediction_project/
+  
+  # Windows: Run as administrator or check folder permissions
+
+Problem: Paths have spaces (Windows)
+Solution:
+  - Avoid spaces in folder names
+  - Use quotes: python "C:/My Folder/scripts/train.py"
+  - Or use paths without spaces
+
+
+9. DEPENDENCY CONFLICTS
+------------------------
+
+Problem: Version conflicts between packages
+Solution:
+  # Create clean virtual environment
+  python -m venv venv
+  source venv/bin/activate  # Linux/Mac
+  venv\Scripts\activate     # Windows
+  
+  pip install -r requirements.txt
+
+Problem: scikit-learn version issues
+Solution:
+  # Uninstall and reinstall
+  pip uninstall scikit-learn
+  pip install scikit-learn==1.3.0
+
+
+10. GETTING ADDITIONAL HELP
+---------------------------
+
+If problems persist:
+
+1. Check error message carefully
+   - Note exact line number
+   - Copy full error traceback
+
+2. Verify environment
+   python --version          # Should be 3.8+
+   pip list                  # Check installed packages
+
+3. Test with small dataset
+   - Use 50 sequences per class
+   - Verify pipeline works end-to-end
+
+4. Enable debug mode
+   # Add at top of script:
+   import logging
+   logging.basicConfig(level=logging.DEBUG)
+
+5. Check system resources
+   - Available RAM (need 4GB+ for large datasets)
+   - Disk space (need 500MB+ for outputs)
+
+
+QUICK DIAGNOSTIC CHECKLIST
+---------------------------
+□ Python 3.8+ installed
+□ All packages from requirements.txt installed
+□ FASTA files in data/raw/
+□ Running from scripts/ directory
+□ At least 100 sequences per class
+□ Valid amino acid sequences only
+□ No duplicate protein IDs
+□ Enough disk space (1GB+)
+□ Enough RAM (4GB+)
+
+
+ERROR LOG LOCATION
+------------------
+If a script fails:
+- Check terminal output for error messages
+- Look for WARNING messages above errors
+- Check file permissions in data/ and results/ folders
+
+
+Still having issues? Double-check:
+1. README.md for detailed usage
+2. QUICK_START.txt for basic workflow
+3. Script comments for parameter explanations
