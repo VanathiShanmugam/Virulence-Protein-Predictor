@@ -1,15 +1,42 @@
-# Virulence-Protein-Predictor
+# 🧬 Virulence Protein Predictor
 
 ### A Computational Pipeline for Sequence-Based Virulence Classification
+
+---
+
+## Highlights
+
+* 500+ sequence-derived protein features (AAC, DPC, **PseAAC**)
+* Multi-model ML framework (Random Forest, XGBoost, SVM, Logistic Regression)
+* Advanced validation (**Cross-validation, MCC, Y-randomization, Domain Applicability**)
+* Ensemble prediction using majority voting
+* Fully reproducible end-to-end pipeline
 
 ---
 
 ## Abstract
 
 Accurate identification of virulent proteins is critical for understanding pathogenic mechanisms and enabling therapeutic target discovery.
+
 This project presents a **machine learning-based computational framework** that classifies proteins as *virulent* or *non-virulent* using sequence-derived features.
 
 A comprehensive feature set (>500 features) was engineered from protein sequences, followed by training and evaluation of multiple machine learning models. The pipeline demonstrates robust predictive performance and provides an extensible framework for bioinformatics-driven pathogen analysis.
+
+---
+
+## 📊 Results
+
+### 🔹 ROC Curve (Main Result)
+
+![ROC Curve](results/figures/14_combined_roc_curves_with_mcc.png)
+
+### 🔹 Model Comparison
+
+![Model Comparison](results/figures/09_model_comparison.png)
+
+### 🔹 Confusion Matrix
+
+![Confusion Matrix](results/figures/06_confusion_matrices.png)
 
 ---
 
@@ -29,27 +56,26 @@ A comprehensive feature set (>500 features) was engineered from protein sequence
 
 Protein sequences were transformed into numerical representations using:
 
-* **Amino Acid Composition (AAC)**
-* **Dipeptide Composition (DPC)**
-* **Physicochemical properties** (molecular weight, GRAVY, instability index)
-* **Charge & polarity-based features**
-* **Signal peptide and structural heuristics**
+* Amino Acid Composition (AAC)
+* Dipeptide Composition (DPC)
+* **Pseudo Amino Acid Composition (PseAAC)**
+* Physicochemical properties (molecular weight, GRAVY, instability index)
+* Charge & polarity-based features
+* Signal peptide and structural heuristics
 
-Total features: **500+ per sequence**
+➡️ **Total features: 500+ per sequence**
 
 ---
 
 ### 2. Data Preprocessing
 
 * Train–Validation–Test split
-* Standardization (scaling)
+* Feature scaling (standardization)
 * Class imbalance handling using **SMOTE**
 
 ---
 
 ### 3. Model Development
-
-The following classifiers were implemented:
 
 * Random Forest
 * XGBoost
@@ -62,37 +88,47 @@ The following classifiers were implemented:
 
 Models were evaluated using:
 
-* Accuracy
-* Precision
-* Recall
-* F1-score
-* ROC-AUC
-* Matthews Correlation Coefficient (MCC)
-
-Additionally:
-
+* Accuracy, Precision, Recall, F1-score
+* ROC-AUC and **Matthews Correlation Coefficient (MCC)**
 * ROC and Precision-Recall curves
 * Confusion matrices
-* Cross-validation and enhanced validation analysis
+
+Advanced validation:
+
+* Cross-validation (5-fold / 10-fold)
+* **Y-randomization testing (model robustness check)**
+* **Domain Applicability Analysis (prediction reliability assessment)**
 
 ---
 
 ### 5. Prediction Framework
 
-A prediction module enables:
+The prediction module enables classification of new protein sequences:
 
-* Input: FASTA file
-* Output:
+* **Input**: FASTA file
+* **Output**:
 
   * Class label (Virulent / Non-virulent)
   * Probability score
-  * Ensemble prediction (majority voting)
+  * Ensemble prediction
+
+➡️ Ensemble decision rule:
+Prediction is based on **majority voting**, where the final class is assigned if ≥ half of the models agree.
 
 ---
 
-## Project Structure
+## Dataset
 
-```bash
+The dataset used in this study was obtained from publicly available sources (e.g., UniProt / literature).
+
+⚠️ Raw and processed datasets are not included due to size constraints.
+They are automatically generated when running the pipeline.
+
+---
+
+## 📁 Project Structure
+
+```bash id="uxc4lx"
 virulence-protein-prediction/
 │
 ├── README.md
@@ -132,33 +168,36 @@ virulence-protein-prediction/
 
 ### Installation
 
-```bash
+```bash id="mrg5rb"
 git clone https://github.com/your-username/virulence-protein-prediction.git
 cd virulence-protein-prediction
 pip install -r requirements.txt
 ```
 
+---
+
 ### Run Full Pipeline
 
-```bash
+```bash id="90rf7u"
 python pipeline/master_pipeline.py
 ```
 
 ---
 
-## Predict on New Sequences
+### Predict on New Sequences
 
-```bash
+```bash id="y3x0ik"
 python src/predict.py --input examples/sample.fasta
 ```
 
 ---
 
-## Results (Summary)
+## 📈 Results Summary
 
 * Multi-model evaluation demonstrated strong classification performance
-* Ensemble predictions improved robustness
-* Feature-rich representation significantly enhanced model accuracy
+* Ensemble predictions improved robustness and stability
+* Advanced validation confirmed model reliability
+* Domain applicability analysis ensures trustworthy predictions
 
 ---
 
@@ -166,8 +205,8 @@ python src/predict.py --input examples/sample.fasta
 
 * Enables **high-throughput virulence prediction**
 * Supports **drug target identification and pathogen analysis**
-* Demonstrates the power of **sequence-based ML in computational biology**
-* Provides a **scalable and extensible bioinformatics framework**
+* Demonstrates effectiveness of **sequence-based ML approaches**
+* Provides a scalable and extensible bioinformatics framework
 
 ---
 
@@ -175,14 +214,14 @@ python src/predict.py --input examples/sample.fasta
 
 * Relies solely on sequence-derived features
 * No structural or experimental validation included
-* Performance depends on dataset quality and class balance
+* Performance depends on dataset quality and balance
 
 ---
 
 ## Future Work
 
 * Integration of structural features (AlphaFold / PDB)
-* Deep learning architectures (CNN/RNN/Transformers)
+* Deep learning models (CNN, RNN, Transformers)
 * External validation on independent datasets
 * Web server or API deployment
 
@@ -190,13 +229,27 @@ python src/predict.py --input examples/sample.fasta
 
 ## Author
 
-**Vanathi Shanmugam**  
-Bioinformatics | Genomics | Machine Learning  
+**Vanathi Shanmugam**
+Bioinformatics | Genomics | Machine Learning
 
-🔗 LinkedIn: www.linkedin.com/in/vanathi-shanmugam-26127928a
+🔗 LinkedIn: https://www.linkedin.com/in/vanathi-shanmugam-26127928a
 
 ---
 
 ## License
 
 This project is intended for academic and research purposes.
+
+---
+
+## Acknowledgments
+
+Built using:
+- NCBI, UniProt and PHI-base for source datas
+- scikit-learn for ML algorithms
+- BioPython for sequence analysis
+- XGBoost for gradient boosting
+- imbalanced-learn for SMOTE
+- matplotlib/seaborn for visualizations
+
+---
