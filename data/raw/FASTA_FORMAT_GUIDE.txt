@@ -1,0 +1,38 @@
+# FASTA FILE FORMAT GUIDE
+# ========================
+
+# This file shows the correct format for your input FASTA files.
+# Copy this format for your actual data files.
+
+# RULES:
+# 1. Each sequence starts with a header line beginning with '>'
+# 2. The header contains the protein ID (no spaces recommended)
+# 3. The sequence follows on the next line(s)
+# 4. Only standard amino acid codes: ACDEFGHIKLMNPQRSTVWY
+# 5. Sequences can span multiple lines (will be concatenated)
+
+# EXAMPLE FORMAT:
+
+>protein001
+MKTLLFALLAFSSFAAQAEEQKQWEQKEKEKDQKEKEKDQKEKDKQKEKEKE
+QKWEQKEKDQKEKDKQKEKEDKQKEKDQKEKDKQKEKDKQKEKDKQKEKDK
+
+>protein002
+MALWMRLLPLLALLALWGPDPAAAFVNQHLCGSHLVEALYLVCGERGFFYT
+PKAEFTPAVHASLDKFLASVSTVLTSKYR
+
+>protein003
+MNIFEMLRIDEGLRLKIYKDTEGYYTIGIGHLLTKSPSLNAAKSELDKAIGRNTNG
+VITKDEAEKLFNQDVDAAVRGILRNAKLKPVYDSLDAVRRCALINMVFQMGETGV
+
+# YOUR DATA FILES NEEDED:
+# 1. data/raw/virulent.fasta     - Contains sequences of virulent proteins
+# 2. data/raw/non_virulent.fasta - Contains sequences of non-virulent proteins
+
+# TIPS:
+# - Minimum 100 sequences per file (200 total) for reliable results
+# - Recommended: 500+ sequences per file
+# - Remove duplicate sequences
+# - Remove sequences with unknown amino acids (X, B, Z, etc.)
+# - Keep sequence length between 50-2000 amino acids
+# - Ensure equal or similar number of sequences in both files
